@@ -53,7 +53,6 @@ type mailAddressInfo struct {
 }
 
 type VerifyResult struct {
-	MailAddress string
 	ValidFormat bool
 	Deliverable bool
 	HostExists  bool
@@ -82,7 +81,7 @@ func checkMXRecord(domain string) bool {
 
 type Dialer func(network, address string) (net.Conn, error)
 
-func VerifyWithPlain(options VerifyOptions) VerifyResult {
+func VerifyNormal(options VerifyOptions) VerifyResult {
 	if !options.parse() {
 		return ResultFormatInvalid
 	}
@@ -92,6 +91,7 @@ func VerifyWithPlain(options VerifyOptions) VerifyResult {
 
 func verifyWithDialer(dialer Dialer, options VerifyOptions) VerifyResult {
 	result := VerifyResult{}
+	result.ValidFormat = true
 	if !checkMXRecord(options.toInfo.Domain) {
 		return ResultHostInvalid
 	} else {
@@ -131,5 +131,5 @@ func Verify(options VerifyOptions) VerifyResult {
 		return VerifyWithSocks5(options)
 	}
 
-	return VerifyWithPlain(options)
+	return VerifyNormal(options)
 }
